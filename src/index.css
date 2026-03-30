@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+.btn {
+  @apply rounded-2xl bg-slate-700 py-4 text-lg font-semibold text-white hover:bg-slate-600 active:scale-95 transition;
+}
+
+.btn-small {
+  @apply rounded-2xl bg-slate-800 py-4 text-base font-semibold text-slate-200 hover:bg-slate-700 active:scale-95 transition;
+}
+
+.btn-add {
+  @apply rounded-2xl bg-teal-500 py-4 text-xl font-semibold text-slate-900 
+         hover:bg-teal-400 active:scale-95 transition
+         border border-white/10;
+}
