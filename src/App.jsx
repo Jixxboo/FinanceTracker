@@ -51,7 +51,7 @@ export default function App() {
             <button onClick={() => addValue(50)} className="btn border border-white/10">50</button>
             <button onClick={() => addValue(0.2)} className="btn-small border border-white/10">0.20</button>
 
-            <button className="btn-add col-span-3 border border-white/10">ADD</button>
+            <button className="btn-add col-span-3 border border-white/10">INPUT</button>
             <button onClick={() => addValue(0.1)} className="btn-small border border-white/10">0.10</button>
           </div>
         </div>
