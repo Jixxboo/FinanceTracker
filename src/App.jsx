@@ -48,10 +48,12 @@ export default function App() {
     <main className="min-h-screen bg-slate-950 text-white">
       <div className="flex h-screen w-full flex-col p-4">
         <div className="flex flex-col h-full w-full rounded-[32px] bg-slate-900 p-5 shadow-2xl">
+          {/* ==== Header ==== */}
           <div>
             <p className="text-sm text-slate-400">Diese Woche</p>
             <p className="text-slate-500 text-sm">Budget: 140 CHF</p>
           </div>
+          {/* ==== Input Box ====*/}
           <div>
             <h1 className="mt-4 text-4xl font-bold text-teal-400">83.40 CHF</h1>
             <p className="text-slate-400">Noch verfügbar</p>
@@ -75,6 +77,12 @@ export default function App() {
               </p>
             </div>
           </div>
+          {/* ==== Expenses Overview (Diagramm kommt hier rein) ==== */}
+          <div>
+
+          </div>
+
+          {/* ==== Input Buttons (Zahlen + Input) ==== */}
           <div className="mt-auto">
             {!showCategories && (
               <div className="mt-6 grid grid-cols-4 gap-3">
@@ -142,19 +150,18 @@ export default function App() {
                 </button>
               </div>
             )}
-          </div>
           {showCategories && (
             <>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 {categories.map((category) => (
                   <button
-                    key={category}
-                    onClick={() => handleCategorySelect(category)}
-                    className={
-                      selectedCategory === category
-                        ? "btn-add border border-white/10"
-                        : "btn border border-white/10"
-                    }
+                  key={category}
+                  onClick={() => handleCategorySelect(category)}
+                  className={
+                    selectedCategory === category
+                    ? "btn-add border border-white/10"
+                    : "btn border border-white/10"
+                  }
                   >
                     {category}
                   </button>
@@ -165,11 +172,12 @@ export default function App() {
                 onClick={handleAddExpense}
                 disabled={!selectedCategory}
                 className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
-              >
+                >
                 ADD
               </button>
             </>
           )}
+          </div>
         </div>
       </div>
     </main>
