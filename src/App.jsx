@@ -8,6 +8,8 @@ export default function App() {
 
   const categories = ["Essen", "Freizeit", "Auto", "Haushalt"];
 
+  const wochenBudget = 140;
+
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
   };
@@ -44,6 +46,31 @@ export default function App() {
     setSelectedCategory("");
     setShowCategories(false);
   };
+
+  const groupedCategories = expenses.reduce((acc, expense) => {
+    const category = expense.category || "Ohne Kategorie";
+    const amount = Number(expense.value) || 0;
+
+    acc[category] = (acc[category] || 0) + amount;
+
+    return acc;
+  }, {});
+
+  const categoryList = Object.entries(groupedCategories).map(
+    ([category, total]) => ({
+      category,
+      total,
+    }),
+  );
+
+  const sortedCategories = categoryList.sort((a, b) => b.total - a.total);
+
+  const max = sortedCategories[0]?.total || 1;
+
+  console.log("EXPENSES:", expenses);
+  console.log("GROUPED:", groupedCategories);
+  console.log("CATEGORY LIST:", categoryList);
+  console.log("Sortiert:", sortedCategories);
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <div className="flex h-screen w-full flex-col p-4">
@@ -78,8 +105,32 @@ export default function App() {
             </div>
           </div>
           {/* ==== Expenses Overview (Diagramm kommt hier rein) ==== */}
-          <div>
+          <div className="mt-6">
+            <h2 className="text-sm text-slate-400 mb-2">
+              Ausgaben nach Kategorien
+            </h2>
 
+            {categoryList.length === 0 && (
+              <p className="text-slate-500 text-sm">Noch keine Ausgaben</p>
+            )}
+
+            {sortedCategories.map((item) => (
+              <div>
+              <div
+                key={item.category}
+                className="flex justify-between text-sm py-1"
+              >
+                <span>{item.category}</span>
+
+                <span>{item.total.toFixed(2)} CHF</span>
+               
+              </div>
+                <div
+                  className="h-2 bg-slate-700 rounded-2xl transition-all"
+                  style={{ width: `${Math.min(item.total * 100 / wochenBudget, 100)}%` }}
+                ></div>
+                </div>
+            ))}
           </div>
 
           {/* ==== Input Buttons (Zahlen + Input) ==== */}
@@ -150,33 +201,33 @@ export default function App() {
                 </button>
               </div>
             )}
-          {showCategories && (
-            <>
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                {categories.map((category) => (
-                  <button
-                  key={category}
-                  onClick={() => handleCategorySelect(category)}
-                  className={
-                    selectedCategory === category
-                    ? "btn-add border border-white/10"
-                    : "btn border border-white/10"
-                  }
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+            {showCategories && (
+              <>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => handleCategorySelect(category)}
+                      className={
+                        selectedCategory === category
+                          ? "btn-add border border-white/10"
+                          : "btn border border-white/10"
+                      }
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
 
-              <button
-                onClick={handleAddExpense}
-                disabled={!selectedCategory}
-                className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
+                <button
+                  onClick={handleAddExpense}
+                  disabled={!selectedCategory}
+                  className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
                 >
-                ADD
-              </button>
-            </>
-          )}
+                  ADD
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
