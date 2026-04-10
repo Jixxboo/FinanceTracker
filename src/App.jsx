@@ -1,15 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function App() {
+  {
+    /* ==== Use States ==== */
+  }
   const [currentAmount, setCurrentAmount] = useState(0);
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState(() => {
+    const savedExpenses = localStorage.getItem("financeapp-expenses");
+    return savedExpenses ? JSON.parse(savedExpenses) : [];
+  });
   const [inputBudget, setInputBudget] = useState("");
-  const [weeklyBudget, setWeeklyBudget] = useState("");
-
+  const [weeklyBudget, setWeeklyBudget] = useState(() => {
+    const savedBudget = localStorage.getItem("financeapp-weeklyBudget");
+    return savedBudget ? JSON.parse(savedBudget) : 0;
+  });
+  {
+    /* ==== Static Data ==== */
+  }
   const categories = ["Essen", "Freizeit", "Auto", "Haushalt"];
 
+  {
+    /* ==== Event Handlers / Actions ==== */
+  }
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
   };
@@ -46,6 +60,51 @@ export default function App() {
     setShowCategories(false);
   };
 
+  const handleSetBudget = () => {
+    if (!inputBudget) return;
+
+    const budget = Number(inputBudget);
+
+    setWeeklyBudget(budget);
+    localStorage.setItem("financeapp-weeklyBudget", JSON.stringify(budget));
+  };
+
+  const handleNewBudget = () => {
+    setWeeklyBudget("");
+    setInputBudget("");
+    localStorage.removeItem("financeapp-weeklyBudget");
+    localStorage.removeItem("financeapp-inputBudget");
+  };
+
+  const handleClearStorage = () => {
+    // State zurücksetzen
+    setWeeklyBudget("");
+    setInputBudget("");
+    setExpenses([]);
+    // localStorage bereinigen
+    localStorage.removeItem("financeapp-expenses");
+    localStorage.removeItem("financeapp-weeklyBudget");
+    localStorage.removeItem("financeapp-inputBudget");
+  };
+  const handleClearExpenses = () => {
+    setExpenses([]);
+    localStorage.removeItem("financeapp-expenses");
+  };
+
+  const deleteLastExpense = () => {
+    setExpenses((prev) => prev.slice(0, -1));
+  };
+
+  {
+    /* ==== Effects / localStorage ==== */
+  }
+  useEffect(() => {
+    localStorage.setItem("financeapp-expenses", JSON.stringify(expenses));
+  }, [expenses]);
+
+  {
+    /* ==== Calculations / Derived Data ==== */
+  }
   const groupedCategories = expenses.reduce((acc, expense) => {
     const category = expense.category || "Ohne Kategorie";
     const amount = Number(expense.value) || 0;
@@ -66,25 +125,21 @@ export default function App() {
 
   const max = sortedCategories[0]?.total || 1;
 
-  const handleSetBudget = () => {
-    if (!inputBudget) return;
-
-    setWeeklyBudget(Number(inputBudget));
-  };
-
   const totalSpent = expenses.reduce((sum, expense) => sum + expense.value, 0);
   const remainingBudget = weeklyBudget - totalSpent;
 
-  const hasBudget = weeklyBudget !== "";
+  const hasBudget = weeklyBudget > 0;
 
-  //console.log(weeklyBudget);
+  console.log(Number(localStorage.getItem("financeapp-weeklyBudget")));
   //console.log(typeof weeklyBudget);
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       {!hasBudget ? (
         <div className="flex h-screen w-full items-center justify-center p-4">
           <div className="w-full max-w-md rounded-[32px] bg-slate-900 p-5 shadow-2xl">
-            <p className="text-sm text-slate-400 mb-2">Wochenbudget eingeben in CHF</p>
+            <p className="text-sm text-slate-400 mb-2">
+              Wochenbudget eingeben in CHF
+            </p>
             {/* ==== User Budget input ==== */}
             <input
               type="number"
@@ -106,11 +161,39 @@ export default function App() {
         <div className="flex h-screen w-full flex-col p-4">
           <div className="flex flex-col h-full w-full rounded-[32px] bg-slate-900 p-5 shadow-2xl">
             {/* ==== Header ==== */}
-            <div>
-              <p className="text-sm text-slate-400">Diese Woche</p>
-              <p className="text-slate-500 text-sm">
-                Budget: {weeklyBudget} CHF
-              </p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm text-slate-400">Diese Woche</p>
+                <p className="text-slate-500 text-sm">
+                  Budget: {weeklyBudget} CHF
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-end gap-3 pr-2">
+                <button
+                  onClick={handleNewBudget}
+                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
+                >
+                  New Budget
+                </button>
+                <button
+                  onClick={handleClearExpenses}
+                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
+                >
+                  Clear Expenses
+                </button>
+                <button
+                  onClick={deleteLastExpense}
+                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
+                >
+                  delete last expense
+                </button>
+                <button
+                  onClick={handleClearStorage}
+                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
+                >
+                  RESET
+                </button>
+              </div>
             </div>
             {/* ==== Input Box ====*/}
             <div>
@@ -164,7 +247,6 @@ export default function App() {
                 </div>
               ))}
             </div>
-
             {/* ==== Input Buttons (Zahlen + Input) ==== */}
             <div className="mt-auto">
               {!showCategories && (
@@ -225,6 +307,7 @@ export default function App() {
                   >
                     INPUT
                   </button>
+
                   <button
                     onClick={() => addValue(0.1)}
                     className="btn-small border border-white/10"
@@ -249,15 +332,20 @@ export default function App() {
                         {category}
                       </button>
                     ))}
+                    <button
+                      onClick={reset}
+                      className="btn-bck mt-4 w-full border border-white/10 disabled:opacity-50"
+                    >
+                      Back
+                    </button>
+                    <button
+                      onClick={handleAddExpense}
+                      disabled={!selectedCategory}
+                      className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
+                    >
+                      ADD
+                    </button>
                   </div>
-
-                  <button
-                    onClick={handleAddExpense}
-                    disabled={!selectedCategory}
-                    className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
-                  >
-                    ADD
-                  </button>
                 </>
               )}
             </div>

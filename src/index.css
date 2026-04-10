@@ -13,3 +13,9 @@
          hover:bg-teal-400 active:scale-95 transition
          border border-white/10;
 }
+
+.btn-bck {
+  @apply rounded-2xl bg-pink-500 py-4 text-xl font-semibold text-slate-900 
+         hover:bg-teal-400 active:scale-95 transition
+         border border-white/10;
+}
