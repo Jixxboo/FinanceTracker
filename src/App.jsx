@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function App() {
   {
     /* ==== Use States ==== */
   }
+  const [showMenu, setShowMenu] = useState(false);
   const [currentAmount, setCurrentAmount] = useState(0);
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -20,7 +21,7 @@ export default function App() {
     /* ==== Static Data ==== */
   }
   const categories = ["Essen", "Freizeit", "Auto", "Haushalt"];
-
+  const menuRef = useRef(null);
   {
     /* ==== Event Handlers / Actions ==== */
   }
@@ -103,6 +104,20 @@ export default function App() {
   }, [expenses]);
 
   {
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+          setShowMenu(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+
     /* ==== Calculations / Derived Data ==== */
   }
   const groupedCategories = expenses.reduce((acc, expense) => {
@@ -130,7 +145,7 @@ export default function App() {
 
   const hasBudget = weeklyBudget > 0;
 
-  console.log(Number(localStorage.getItem("financeapp-weeklyBudget")));
+  //console.log(Number(localStorage.getItem("financeapp-weeklyBudget")));
   //console.log(typeof weeklyBudget);
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -167,60 +182,82 @@ export default function App() {
                 <p className="text-slate-500 text-sm">
                   Budget: {weeklyBudget} CHF
                 </p>
+                <div className="mt-4">
+                  <p className="mt-3 text-slate-400 text-sm">Noch verfügbar</p>
+                  <p className="text-4xl font-bold text-teal-400">
+                    {remainingBudget.toFixed(2)} CHF
+                  </p>
+                </div>
               </div>
               <div className="flex flex-wrap justify-end gap-3 pr-2">
-                <button
-                  onClick={handleNewBudget}
-                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
-                >
-                  New Budget
-                </button>
-                <button
-                  onClick={handleClearExpenses}
-                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
-                >
-                  Clear Expenses
-                </button>
-                <button
-                  onClick={deleteLastExpense}
-                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
-                >
-                  delete last expense
-                </button>
-                <button
-                  onClick={handleClearStorage}
-                  className="rounded-xl bg-pink-300 px-4 py-1.5 text-xs font-bold text-black hover:bg-pink-400 active:scale-95 transition"
-                >
-                  RESET
-                </button>
-              </div>
-            </div>
-            {/* ==== Input Box ====*/}
-            <div>
-              <h1 className="mt-4 text-4xl font-bold text-teal-400">
-                {remainingBudget.toFixed(2)} CHF
-              </h1>
-              <p className="text-slate-400">Noch verfügbar</p>
-
-              <div className="mt-6 rounded-2xl bg-slate-800 p-4 border border-white/10">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-500">
-                    Aktueller Betrag
-                  </p>
-
+                <div className="relative" ref={menuRef}>
                   <button
-                    onClick={reset}
-                    className="rounded-xl bg-pink-500 px-4 py-1.5 text-xs font-bold text-white hover:bg-pink-400 active:scale-95 transition"
+                    onClick={() => setShowMenu((prev) => !prev)}
+                    className="p-2 rounded-xl hover:bg-slate-700 active:scale-95 transition"
                   >
-                    DEL
+                    Menu
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"
+                      />
+                    </svg>
+                    {showMenu && (
+                      <div className="absolute right-0 mt-2 w-52 rounded-2xl border border-white/10 bg-slate-800 p-2 shadow-xl z-50">
+                        <button
+                          onClick={() => {
+                            handleNewBudget();
+                            setShowMenu(false);
+                          }}
+                          className="w-full rounded-xl px-3 py-2 text-left text-sm text-white hover:bg-slate-700 transition"
+                        >
+                          New Budget
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            handleClearExpenses();
+                            setShowMenu(false);
+                          }}
+                          className="mt-1 w-full rounded-xl px-3 py-2 text-left text-sm text-white hover:bg-slate-700 transition"
+                        >
+                          Clear Expenses
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            deleteLastExpense();
+                            setShowMenu(false);
+                          }}
+                          className="mt-1 w-full rounded-xl px-3 py-2 text-left text-sm text-white hover:bg-slate-700 transition"
+                        >
+                          Delete last expense
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            handleClearStorage();
+                            setShowMenu(false);
+                          }}
+                          className="mt-1 w-full rounded-xl px-3 py-2 text-left text-sm text-pink-300 hover:bg-slate-700 transition"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    )}
                   </button>
                 </div>
-
-                <p className="mt-4 text-center text-3xl font-semibold ">
-                  {currentAmount.toFixed(2)} CHF
-                </p>
               </div>
             </div>
+
             {/* ==== Expenses Overview (Diagramm kommt hier rein) ==== */}
             <div className="mt-6">
               <h2 className="text-sm text-slate-400 mb-2">
@@ -246,9 +283,39 @@ export default function App() {
                   ></div>
                 </div>
               ))}
+              <div className="mt-4 flex justify-between border-t border-white/10 pt-3">
+                <span className="text-sm text-slate-400">Total Ausgaben</span>
+                <span className="text-lg font-semibold text-red-400">
+                  {totalSpent.toFixed(2)} CHF
+                </span>
+              </div>
             </div>
+
             {/* ==== Input Buttons (Zahlen + Input) ==== */}
             <div className="mt-auto">
+              {/* ==== Input Box ====*/}
+              <div>
+                
+
+                <div className="mt-6 rounded-2xl bg-slate-800 p-4 border border-white/10">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xs uppercase tracking-wide text-slate-500">
+                      Aktueller Betrag
+                    </p>
+
+                    <button
+                      onClick={reset}
+                      className="rounded-xl bg-pink-500 px-4 py-1.5 text-xs font-bold text-white hover:bg-pink-400 active:scale-95 transition"
+                    >
+                      DEL
+                    </button>
+                  </div>
+
+                  <p className="mt-4 text-center text-3xl font-semibold ">
+                    {currentAmount.toFixed(2)} CHF
+                  </p>
+                </div>
+              </div>
               {!showCategories && (
                 <div className="mt-6 grid grid-cols-4 gap-3">
                   <button
