@@ -416,20 +416,14 @@ export default function App() {
                         {category}
                       </button>
                     ))}
-                    <button
-                      onClick={reset}
-                      className="btn-bck mt-4 w-full border border-white/10 disabled:opacity-50"
-                    >
-                      Back
-                    </button>
-                    <button
-                      onClick={handleAddExpense}
-                      disabled={!selectedCategory}
-                      className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
-                    >
-                      ADD
-                    </button>
                   </div>
+                  <button
+                    onClick={handleAddExpense}
+                    disabled={!selectedCategory}
+                    className="btn-add mt-4 w-full border border-white/10 disabled:opacity-50"
+                  >
+                    ADD
+                  </button>
                 </>
               )}
             </div>
