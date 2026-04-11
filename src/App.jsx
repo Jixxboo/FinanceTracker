@@ -184,7 +184,11 @@ export default function App() {
                 </p>
                 <div className="mt-4">
                   <p className="mt-3 text-slate-400 text-sm">Noch verfügbar</p>
-                  <p className="text-4xl font-bold text-teal-400">
+                  <p
+                    className={`text-4xl font-bold ${
+                      remainingBudget < 0 ? "text-red-400" : "text-teal-400"
+                    }`}
+                  >
                     {remainingBudget.toFixed(2)} CHF
                   </p>
                 </div>
@@ -219,7 +223,7 @@ export default function App() {
                           }}
                           className="w-full rounded-xl px-3 py-2 text-left text-sm text-white hover:bg-slate-700 transition"
                         >
-                          New Budget
+                          Neues Budget
                         </button>
 
                         <button
@@ -229,7 +233,7 @@ export default function App() {
                           }}
                           className="mt-1 w-full rounded-xl px-3 py-2 text-left text-sm text-white hover:bg-slate-700 transition"
                         >
-                          Clear Expenses
+                          Alle Ausgaben löschen
                         </button>
 
                         <button
@@ -239,7 +243,7 @@ export default function App() {
                           }}
                           className="mt-1 w-full rounded-xl px-3 py-2 text-left text-sm text-white hover:bg-slate-700 transition"
                         >
-                          Delete last expense
+                          Lösche letzte Ausgabe
                         </button>
 
                         <button
@@ -285,9 +289,11 @@ export default function App() {
               ))}
               <div className="mt-4 flex justify-between border-t border-white/10 pt-3">
                 <span className="text-sm text-slate-400">Total Ausgaben</span>
-                <span className="text-lg font-semibold text-red-400">
-                  {totalSpent.toFixed(2)} CHF
-                </span>
+                {expenses.length > 0 && (
+                  <span className="text-lg font-semibold text-red-400">
+                    -{totalSpent.toFixed(2)} CHF
+                  </span>
+                )}
               </div>
             </div>
 
@@ -295,8 +301,6 @@ export default function App() {
             <div className="mt-auto">
               {/* ==== Input Box ====*/}
               <div>
-                
-
                 <div className="mt-6 rounded-2xl bg-slate-800 p-4 border border-white/10">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-xs uppercase tracking-wide text-slate-500">
@@ -307,7 +311,20 @@ export default function App() {
                       onClick={reset}
                       className="rounded-xl bg-pink-500 px-4 py-1.5 text-xs font-bold text-white hover:bg-pink-400 active:scale-95 transition"
                     >
-                      DEL
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                        />
+                      </svg>
                     </button>
                   </div>
 
