@@ -5,7 +5,7 @@ export default function App() {
     /* ==== Use States ==== */
   }
   const [showMenu, setShowMenu] = useState(false);
-  const [currentAmount, setCurrentAmount] = useState(0);
+  const [currentAmount, setCurrentAmount] = useState("0");
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [expenses, setExpenses] = useState(() => {
@@ -30,7 +30,10 @@ export default function App() {
   };
 
   const addValue = (value) => {
-    setCurrentAmount((prev) => parseFloat((prev + value).toFixed(2)));
+    setCurrentAmount((prev) => {
+      if (prev === "0") return String(value);
+      return prev + String(value);
+    });
   };
 
   const reset = () => {
@@ -50,7 +53,7 @@ export default function App() {
 
     const newExpense = {
       id: Date.now(),
-      value: currentAmount,
+      value: Number(currentAmount),
       category: selectedCategory,
     };
 
@@ -329,12 +332,12 @@ export default function App() {
                   </div>
 
                   <p className="mt-4 text-center text-3xl font-semibold ">
-                    {currentAmount.toFixed(2)} CHF
+                    {Number(currentAmount).toFixed(2)} CHF
                   </p>
                 </div>
               </div>
               {!showCategories && (
-                <div className="mt-6 grid grid-cols-4 gap-3">
+                <div className="mt-6 grid grid-cols-3 gap-3">
                   <button
                     onClick={() => addValue(1)}
                     className="btn border border-white/10"
@@ -348,56 +351,68 @@ export default function App() {
                     2
                   </button>
                   <button
+                    onClick={() => addValue(3)}
+                    className="btn border border-white/10"
+                  >
+                    3
+                  </button>
+                  <button
+                    onClick={() => addValue(4)}
+                    className="btn border border-white/10"
+                  >
+                    4
+                  </button>
+
+                  <button
                     onClick={() => addValue(5)}
                     className="btn border border-white/10"
                   >
                     5
                   </button>
                   <button
-                    onClick={() => addValue(0.5)}
-                    className="btn-small border border-white/10"
-                  >
-                    0.50
-                  </button>
-
-                  <button
-                    onClick={() => addValue(10)}
+                    onClick={() => addValue(6)}
                     className="btn border border-white/10"
                   >
-                    10
+                    6
                   </button>
                   <button
-                    onClick={() => addValue(20)}
+                    onClick={() => addValue(7)}
                     className="btn border border-white/10"
                   >
-                    20
+                    7
                   </button>
                   <button
-                    onClick={() => addValue(50)}
+                    onClick={() => addValue(8)}
                     className="btn border border-white/10"
                   >
-                    50
+                    8
                   </button>
                   <button
-                    onClick={() => addValue(0.2)}
-                    className="btn-small border border-white/10"
+                    onClick={() => addValue(9)}
+                    className="btn border border-white/10"
                   >
-                    0.20
+                    9
                   </button>
-
+                  <button
+                    onClick={() => addValue(".")}
+                    className="btn border border-white/10"
+                  >
+                    .
+                  </button>
+                   <button
+                    onClick={() => addValue(0)}
+                    className="btn border border-white/10"
+                  >
+                    0
+                  </button>
                   <button
                     onClick={handleInputClick}
-                    className="btn-add col-span-3 border border-white/10"
+                    className="btn-add col-span-1 border border-white/10"
                   >
                     INPUT
                   </button>
 
-                  <button
-                    onClick={() => addValue(0.1)}
-                    className="btn-small border border-white/10"
-                  >
-                    0.10
-                  </button>
+                  
                 </div>
               )}
               {showCategories && (
